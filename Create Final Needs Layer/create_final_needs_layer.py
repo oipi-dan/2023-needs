@@ -25,7 +25,7 @@ intermediate_gdb = f"{main_path}\\A1 - Common Datasets\\Create Final Needs Layer
 if not os.path.exists(intermediate_gdb):
     arcpy.CreateFileGDB_management(os.path.dirname(intermediate_gdb), os.path.basename(intermediate_gdb))
 
-output_gdb = f"{main_path}\\A1 - Common Datasets\\2023_VTrans_MidTerm_Needs.gdb"
+output_gdb = f"{main_path}\\2023_VTrans_MidTerm_Needs.gdb"
 if not os.path.exists(output_gdb):
     arcpy.CreateFileGDB_management(os.path.dirname(output_gdb), os.path.basename(output_gdb))
 

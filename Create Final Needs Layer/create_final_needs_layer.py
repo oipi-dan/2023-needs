@@ -463,7 +463,7 @@ print('Calculating RN Eligible UDA Needs')
 # RNs with less than 20 miles of congestion needs
 Congestion_RNs = ['Kingsport Region', 'Danville Region', 'Bristol Region', 'Central VA MPO Region (Lynchburg)', 'Harrisonburg Region', 'Charlottesville Region', 'New River Valley Region', 'Winchester Region', 'Staunton/Augusta/Waynesboro Region']
 
-df_all_needs_nodup.loc[((df_all_needs_nodup['CoSS_Congestion'] == 'YES') | (df_all_needs_nodup['RN_Congestion'] == 'YES')) & (df_all_needs_nodup['RN_Name'].isin(Congestion_RNs)), 'RN_Growth_Area'] = 'YES'
+df_all_needs_nodup.loc[((df_all_needs_nodup['UDA_Bike_Infrast'] == 'YES') | (df_all_needs_nodup['UDA_Comp_Street'] == 'YES') | (df_all_needs_nodup['UDA_Intersection_Des'] == 'YES') | (df_all_needs_nodup['UDA_Landscape'] == 'YES') | (df_all_needs_nodup['UDA_Offstreet_Park'] == 'YES') | (df_all_needs_nodup['UDA_Onstreet_Park'] == 'YES') | (df_all_needs_nodup['UDA_Ped_Infrast'] == 'YES') | (df_all_needs_nodup['UDA_Road_Capacity'] == 'YES') | (df_all_needs_nodup['UDA_Road_Ops'] == 'YES') | (df_all_needs_nodup['UDA_Safety_Feat'] == 'YES') | (df_all_needs_nodup['UDA_Sidewalk'] == 'YES') | (df_all_needs_nodup['UDA_Signage'] == 'YES') | (df_all_needs_nodup['UDA_Street_Grid'] == 'YES') | (df_all_needs_nodup['UDA_Traffic_Calm'] == 'YES') | (df_all_needs_nodup['UDA_Transit_Capacity'] == 'YES') | (df_all_needs_nodup['UDA_Transit_Facilities'] == 'YES') | (df_all_needs_nodup['UDA_Transit_Freq'] == 'YES') | (df_all_needs_nodup['UDA_Transit_Ops'] == 'YES')) & (df_all_needs_nodup['RN_Name'].isin(Congestion_RNs)), 'RN_Growth_Area'] = 'YES'
 
 all_needs_csv = os.path.join(os.path.dirname(intermediate_gdb), 'all_needs.csv')
 df_all_needs_nodup.to_csv(all_needs_csv, index=False)

@@ -57,7 +57,8 @@ echo Transit Access for Equity Emphasis Areas (9 of 13)
 
 echo(
 echo Roadway Safety (10 of 13)
-%propy% "%scriptpath%Roadway Safety\identify_roadway_safety_need.py"
+:: %propy% "%scriptpath%Roadway Safety\identify_roadway_safety_need.py"
+:: Roadway safety needs were manually fixed and should not be run again
 
 
 echo(

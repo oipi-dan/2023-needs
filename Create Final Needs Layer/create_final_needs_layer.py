@@ -432,12 +432,15 @@ def calculate_seg_id(rte_nm, geom):
         else:
             d = '1' if rte_nm[7:9] == 'PR' else '0'
 
+        # Get last three of route number to avoid duplicates at intersections
+        n = rte_nm[11:14]
+
         # Get midpoint coordinates
         midPoint = geom.positionAlongLine(0.5, True)
         x = str(midPoint.firstPoint.X * -1).replace('.','')[:7]
         y = str(midPoint.firstPoint.Y).replace('.','')[:7]
 
-        return d + x + y
+        return d + n + x + y
     except:
         return None
 

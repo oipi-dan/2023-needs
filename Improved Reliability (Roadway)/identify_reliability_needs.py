@@ -53,13 +53,24 @@ df_lottr = pd.read_csv(LOTTR)#, usecols=['tmc', 'F22SHrGT13', 'F22SHrGT15'])
 
 # %%
 # Identify reliability threshold - Roadway segments where the average weekday and weekend day LOTTR is greater than 1.5 for are identified as those with a VTrans Mid-term Need for Improved Reliability.
-lottr_columns = ['F22SD6AM', 'F22SD7AM', 'F22SD8AM',
-       'F22SD9AM', 'F22SD10AM', 'F22SD11AM', 'F22SD12PM', 'F22SD1PM',
-       'F22SD2PM', 'F22SD3PM', 'F22SD4PM', 'F22SD5PM', 'F22SD6PM', 'F22SD7PM']
 
-df_lottr['avg_lottr'] = df_lottr[lottr_columns].mean(axis=1)
+# This cell was based on a misinterpretation of the technical guide due to a typo and calculates the reliability threshold incorrectly.
+# I've preserved it here for future reference
+
+# lottr_columns = ['F22SD6AM', 'F22SD7AM', 'F22SD8AM',
+#        'F22SD9AM', 'F22SD10AM', 'F22SD11AM', 'F22SD12PM', 'F22SD1PM',
+#        'F22SD2PM', 'F22SD3PM', 'F22SD4PM', 'F22SD5PM', 'F22SD6PM', 'F22SD7PM']
+
+# df_lottr['avg_lottr'] = df_lottr[lottr_columns].mean(axis=1)
+# df_lottr['reliability_threshold'] = 'NO'
+# df_lottr.loc[df_lottr['avg_lottr'] >= 1.5, 'reliability_threshold'] = 'YES'
+# Identify reliability threshold - Roadway segments where the average weekday and weekend day LOTTR is greater than 1.5 for 
+# at least one hour are identified as those with a VTrans Mid-term Need for Improved Reliability.
+
+# F22SHrGT15 is the count of hours greater than 1.5.  Any segment where this is greater than 0 meets the threshold for reliability
+# need.
 df_lottr['reliability_threshold'] = 'NO'
-df_lottr.loc[df_lottr['avg_lottr'] >= 1.5, 'reliability_threshold'] = 'YES'
+df_lottr.loc[df_lottr['F22SHrGT15'] > 0, 'reliability_threshold'] = 'YES'
 
 # %%
 # Overlay TMC, CoSS, and RN layers

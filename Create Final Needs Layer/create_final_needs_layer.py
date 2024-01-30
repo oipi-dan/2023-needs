@@ -48,6 +48,8 @@ source_UDA = f"{main_path}\\A1 - Common Datasets\\Urban Development Areas (UDAs)
 
 # CoSS and FC event tables
 source_CoSS = f"{common_datasets_gdb}\\CoSS_2023"
+source_CoSS = f"{common_datasets_gdb}\\tbl_coss_2023_01252024"
+source_CoSS = f"{common_datasets_gdb}\\tbl_coss_2023"
 source_FC = f"{common_datasets_gdb}\\tbl_fc23"
 
 # Other datasets
@@ -286,20 +288,21 @@ fc_needs = os.path.join(intermediate_gdb, 'VTrans_MidTerm_Needs_2023_Intermediat
 # Make lrs dictionary
 print('Update LRS Fields')
 routes_needed = set([route[0] for route in arcpy.da.SearchCursor(fc_needs, 'RTE_NM')])
-lrs_fields = ['RTE_NM', 'RTE_STREET_NM', 'RTE_COMMON_NM', 'RTE_OPPOSITE_DIRECTION_RTE_NM', 'RTE_DIRECTION_CD']
-lrs_dict = {row[0]: (row[1], row[2], row[3], row[4]) for row in arcpy.da.SearchCursor(lrs, lrs_fields)}
+lrs_fields = ['RTE_NM', 'RTE_STREET_NM', 'RTE_COMMON_NM', 'RTE_OPPOSITE_DIRECTION_RTE_NM', 'RTE_DIRECTION_CD', 'RTE_PARENT_RTE_NM']
+lrs_dict = {row[0]: (row[1], row[2], row[3], row[4], row[5]) for row in arcpy.da.SearchCursor(lrs, lrs_fields)}
 
-update_lrs_fields = ['RTE_NM', 'ST_NM', 'VDOT_COMMON_NM', 'RTE_OPPOSITE_DIRECTION_RTE_NM', 'Direction']
+update_lrs_fields = ['RTE_NM', 'ST_NM', 'VDOT_COMMON_NM', 'RTE_OPPOSITE_DIRECTION_RTE_NM', 'Direction', 'MASTER_RTE_NM']
 with arcpy.da.UpdateCursor(fc_needs, update_lrs_fields) as cur:
     for row in cur:
         try:
-            st_nm, vdot_common_nm, rte_opposite_direction_rte_nm, direction = lrs_dict.get(row[0])
+            st_nm, vdot_common_nm, rte_opposite_direction_rte_nm, direction, master_rte_nm = lrs_dict.get(row[0])
         except:
-            st_nm, vdot_common_nm, rte_opposite_direction_rte_nm, direction = ('ERROR', 'ERROR', 'ERROR', 'ERROR')
+            st_nm, vdot_common_nm, rte_opposite_direction_rte_nm, direction, master_rte_nm = ('ERROR', 'ERROR', 'ERROR', 'ERROR', 'ERROR')
         row[1] = st_nm
         row[2] = vdot_common_nm
         row[3] = rte_opposite_direction_rte_nm
         row[4] = direction
+        row[5] = master_rte_nm
         cur.updateRow(row)
 
 lyr_fc_needs = 'lyr_fc_needs'
@@ -317,6 +320,7 @@ for district in districts:
         for row in cur:
             row[0] = district
             cur.updateRow(row)
+arcpy.SelectLayerByAttribute_management(lyr_fc_needs, 'CLEAR_SELECTION')
 
 
 # ### VDOT Jurisdictions  (Field Removed)
@@ -344,6 +348,7 @@ for MPO_Name in MPO_Names:
         for row in cur:
             row[0] = MPO_Name
             cur.updateRow(row)
+arcpy.SelectLayerByAttribute_management(lyr_fc_needs, 'CLEAR_SELECTION')
 
 
 # ### Census Urban Areas  (Field Removed)
@@ -367,6 +372,14 @@ print('Update Urban Development Area Fields')
 lyr_UDA = 'lyr_UDA'
 arcpy.MakeFeatureLayer_management(UDAs, lyr_UDA)
 UDA_Names = [row[0] for row in arcpy.da.SearchCursor(lyr_UDA, 'UDA_NM')]
+
+# Set all UDA field for all records to NO
+with arcpy.da.UpdateCursor(lyr_fc_needs, 'UDA') as cur:
+    for row in cur:
+        row[0] = 'NO'
+        cur.updateRow(row)
+
+# For each UDA, update UDA field to YES and enter the UDA Name
 for UDA_Name in UDA_Names:
     # Fix single quote issue in sql query
     sql_uda_name = UDA_Name.replace("'", "''")
@@ -377,6 +390,25 @@ for UDA_Name in UDA_Names:
             row[0] = 'YES'
             row[1] = UDA_Name
             cur.updateRow(row)
+arcpy.SelectLayerByAttribute_management(lyr_fc_needs, 'CLEAR_SELECTION')
+
+### CoSS
+# CoSS data is brought in from the CoSS layer.  Set CoSS field to NO if field is NULL.  Set CoSS_Primary to NO if field is NULL
+with arcpy.da.UpdateCursor(fc_needs, ['CoSS', 'CoSS_Primary']) as cur:
+    for row in cur:
+        update = False
+
+        if row[0] is None or row[0] == '':
+            row[0] = 'NO'
+            update = True
+
+        if row[1] is None or row[0] == '':
+            row[1] = 'NO'
+            update = True
+        
+        if update == True:
+            cur.updateRow(row)
+
 
 
 ### Regional Networks
@@ -391,7 +423,7 @@ for RN_Name in RN_Names:
         for row in cur:
             row[0] = RN_Name
             cur.updateRow(row)
-
+arcpy.SelectLayerByAttribute_management(lyr_fc_needs, 'CLEAR_SELECTION')
 
 ### Segment Length
 print('Update Length')

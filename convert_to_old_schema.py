@@ -15,7 +15,7 @@ main_path = os.path.dirname(os.path.abspath(__file__))
 common_datasets_gdb = os.path.join(main_path, r'A1 - Common Datasets\Common_Datasets.gdb')
 
 new_source = f'{main_path}\\2023_VTrans_MidTerm_Needs.gdb\VTrans_MidTerm_Needs_2023'
-output_gdb = f'{main_path}\\2023_VTrans_MidTerm_Needs.gdb'
+output_gdb = r'C:\Users\daniel.fourquet\Documents\tempdelete\2023_VTrans_MidTerm_Needs.gdb'
 output_tbl_name = 'tbl_VTrans_MidTerm_Needs_2023_Old_Schema'
 output_event_layer_name = 'VTrans_MidTerm_Needs_2023_Old_Schema'
 lrs = f'{common_datasets_gdb}\\SDE_VDOT_RTE_OVERLAP_LRS_DY'
